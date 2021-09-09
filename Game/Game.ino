@@ -1,3 +1,16 @@
+// OLED display libraries
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+// Gesture sensor libraries
+#include <Wire.h>
+#include <paj7620.h>
+
+#define GES_REACTIONE_TIME 500
+#define GES_ENTRY_TIME 800
+#define GES_QUIT_TIME 1000
+#define I2C_ADDRESS 0x43
+#define I2C_ADDRESS2 0x44
+
 void setup() {
   // put your setup code here, to run once:
 
