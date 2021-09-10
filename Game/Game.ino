@@ -11,6 +11,19 @@
 #define I2C_ADDRESS 0x43
 #define I2C_ADDRESS2 0x44
 
+#define OLED_RESET 1  //GPIO1
+
+Adafruit_SSD1306 display(OLED_RESET);
+
+
+// Scores
+int MAX_SCORE;
+
+int PLAYER_SCORE;
+int CPU_SCORE;
+
+
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -18,5 +31,5 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  display.clearDisplay();
 }
