@@ -5,7 +5,7 @@ TESTS:
 - Motor: YES
 - Display + WiFi: YES
 - Display + WiFi + Gesture: YES
-- Display + WiFi + Motor: ????
+- Display + WiFi + + Gesture + Motor: ????
 
 TODO:
 Actually make a game...
