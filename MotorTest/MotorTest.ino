@@ -14,7 +14,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  motor.changeFreq(MOTOR_CH_BOTH, PM_FREQUENCY);
+  motor.changeFreq(MOTOR_CH_BOTH, PWMFREQUENCY);
   motor.changeStatus(MOTOR_CH_A, MOTOR_STATUS_CCW);
   for (int duty = 40; duty <= 100; duty += 1) {
     motor.changeDuty(MOTOR_CH_A, duty);
