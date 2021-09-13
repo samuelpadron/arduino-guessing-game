@@ -37,7 +37,13 @@ void setup() {
     Serial.println("MDNS responder started");
   }
 
+  // I missed this part of the code....... woops at least it works now
   //handler for input from WiFi connection
+  server.on("/", [](){
+    server.send(200, "text/html", webPage);
+  });
+
+  //handler for input from button
   server.on("/button", [](){
     server.send(200, "text/html", webPage);
     ledOn = !ledOn;
