@@ -12,10 +12,7 @@
 #define GES_QUIT_TIME 1000
 #define I2C_ADDRESS 0x43
 #define I2C_ADDRESS2 0x44
-
-#define KEYA D3
-#define KEYB D4
-#define OLED_RESET 1  //GPIO1
+#define OLED_RESET 1  //GPIO
 
 
 #define LISTEN_PORT 80
@@ -27,7 +24,8 @@ MDNSResponder mdns;
 ESP8266WebServer server(LISTEN_PORT);
 String webPage = "<h1>NDL Game</h1>";
 
-bool ledOn = false;
+bool startGame = false;
+bool buttonClicked = false;
 
 Adafruit_SSD1306 display(OLED_RESET);
 
@@ -39,9 +37,8 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(KEYA, INPUT);
   pinMode(KEYB, INPUT);
-  
-  digitalWrite(LED_BUILTIN, ledOn);
 
+  webPageLayout();
   WiFi.begin(ssid, password);
   Serial.println("Start connecting.");
   while (WiFi.status() != WL_CONNECTED) {
@@ -62,6 +59,15 @@ void setup() {
     server.send(200, "text/html", webPage);
   });
 
+  server.on("/button", [](){
+    server.send(200, "text/html", webPage);
+    buttonClicked = !buttonClicked;
+    Serial.print("button");
+    Serial.println(buttonClicked);
+  });
+
+
+
   server.begin();
   Serial.println("HTTP server started");
 
@@ -70,11 +76,22 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   server.handleClient();
+  
   display.clearDisplay();
   display.setCursor(0,0);
   display.setTextColor(WHITE);
   display.setTextSize(1);
-  display.println(webPage);
+  display.println("WiFi Test");
+  display.print("Button = ");
+  display.println(buttonClicked);
   display.display();
+  
   delay(200);
+}
+
+void webPageLayout() {
+  webPage += "<p>Press me <a href=\"button\">";
+  webPage += "<button style=\"background-color:blue;color:white;\">";
+  webPage += "LED</button></a></p>";
+
 }
