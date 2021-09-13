@@ -33,11 +33,13 @@ void setup() {
   // put your setup code here, to run once:
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   Serial.begin(115200);
-  
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(KEYA, INPUT);
-  pinMode(KEYB, INPUT);
 
+  uint8_t error = paj7620Init();  //init Paj7620 registers
+  if (error) {
+    Serial.print("INIT ERROR,CODE: ");
+    Serial.println(error);
+  }
+  
   webPageLayout();
   WiFi.begin(ssid, password);
   Serial.println("Start connecting.");
@@ -76,6 +78,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   server.handleClient();
+
+  gestureHandler();
   
   display.clearDisplay();
   display.setCursor(0,0);
@@ -94,4 +98,45 @@ void webPageLayout() {
   webPage += "<button style=\"background-color:blue;color:white;\">";
   webPage += "LED</button></a></p>";
 
+}
+
+void gestureHandler() {
+  Serial.begin(9600);
+  uint8_t data = 0, data1 = 0, error;
+  error = paj7620ReadReg(I2C_ADDRESS, 1, &data); // Read gesture result
+  if (!error) {
+    switch (data) {
+      case GES_RIGHT_FLAG:
+        Serial.println("Right");
+        break;
+      case GES_LEFT_FLAG:
+        Serial.println("Left");
+        break;
+      case GES_UP_FLAG:
+        Serial.println("Up");
+        break;
+      case GES_DOWN_FLAG:
+        Serial.println("Down");
+        break;
+      case GES_FORWARD_FLAG:
+        Serial.println("Forward");
+        break;
+      case GES_BACKWARD_FLAG:
+        Serial.println("Backward");
+        break;
+      case GES_CLOCKWISE_FLAG:
+        Serial.println("Clockwise");
+      case GES_COUNT_CLOCKWISE_FLAG:
+        Serial.println("Anti-clockwise");
+        break;
+      default:
+        paj7620ReadReg(I2C_ADDRESS2, 1,&data);
+        if (data == GES_WAVE_FLAG) {
+          Serial.println("wave");
+        } else {
+          Serial.print(".");
+        }
+        break;
+    }
+  }
 }
