@@ -6,6 +6,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <LOLIN_I2C_MOTOR.h>
 
 #define GES_REACTIONE_TIME 500
 #define GES_ENTRY_TIME 800
@@ -15,14 +16,17 @@
 #define OLED_RESET 1  //GPIO
 #define LISTEN_PORT 80
 #define GESTURE_DELAY 2000
-#define DISPLAY_DELAY 200
+#define MOTOR_DELAY 2000
+#define PWMFREQUENCY 1000
+
 
 bool gestureHandling = false;
 long gestureLastTime = 0;
-long displayLastTime = 0;
+long motorLastTime = 0;
 
 MDNSResponder mdns;
 ESP8266WebServer server(LISTEN_PORT);
+LOLIN_I2C_MOTOR motor(DEFAULT_I2C_MOTOR_ADDRESS);
 
 Adafruit_SSD1306 display(OLED_RESET);
 
@@ -43,6 +47,10 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   Serial.begin(115200);
 
+   while (motor.PRODUCT_ID != PRODUCT_ID_I2C_MOTOR) {
+    motor.getInfo();
+  }
+  
   uint8_t error = paj7620Init();  //init Paj7620 registers
   if (error) {
     Serial.print("INIT ERROR,CODE: ");
@@ -172,7 +180,15 @@ void guessHandler() {
 }
 
 void rewardPlayer(){
-  Serial.println("Move motor");
+  motor.changeFreq(MOTOR_CH_BOTH, PWMFREQUENCY);
+  motor.changeStatus(MOTOR_CH_A, MOTOR_STATUS_CCW);
+  if(millis() - MOTOR_DELAY > motorLastTime) {
+    motor.changeDuty(MOTOR_CH_A, 50);
+    motorLastTime += MOTOR_DELAY;
+  }
+  motor.changeStatus(MOTOR_CH_A, MOTOR_STATUS_STANDBY);
+
+  Serial.println("Moving motor");
 }
 
 void gestureHandler() {
