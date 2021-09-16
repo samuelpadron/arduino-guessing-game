@@ -65,6 +65,8 @@ void setup() {
   if (mdns.begin("esp8266", WiFi.localIP())) {
     Serial.println("MDNS responder started");
   }
+
+  webPageHandlers();
  
   server.begin();
   Serial.println("HTTP server started");
